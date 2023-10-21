@@ -1,11 +1,11 @@
-package main
+package random
 
 import (
     "fmt"
     "math/rand"
 )
-        
-func main() {
+
+func random() {
     min := 0
     max := 30
     fmt.Println(rand.Intn(max - min) + min)
