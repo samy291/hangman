@@ -7,5 +7,7 @@ import (
 func main() {
 	tabWord := hangman.ExtractWordsFromFile("Words/words.txt")
 	randomWord := hangman.Random(tabWord)
-	hangman.Displaywords(randomWord)
+	tabletter := hangman.Displaywords(randomWord)
+	letterimput := hangman.Imputuser()
+	hangman.Imputverif(randomWord, letterimput, tabletter)
 }

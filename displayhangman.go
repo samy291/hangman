@@ -5,7 +5,7 @@ import (
 	"math/rand"
 )
 
-func Displaywords(words string) {
+func Displaywords(words string) []string {
 	numbwords := len(words)/2 - 1
 
 	tabword := make([]string, len(words))
@@ -16,7 +16,7 @@ func Displaywords(words string) {
 	for i := 0; i < numbwords; i++ {
 		max := len(words) - 1
 		indexrandomword := rand.Intn(max)
-		randomletter := string(words[indexrandomword]) 
+		randomletter := string(words[indexrandomword])
 
 		for j := 0; j < len(words); j++ {
 			if string(words[j]) == randomletter {
@@ -25,12 +25,29 @@ func Displaywords(words string) {
 		}
 	}
 	fmt.Println(tabword)
+	return tabword
 }
 
-func Imputuser() { 
-    fmt.Println("Enter your letter: ") 
-   
-    var letter string 
-   
-    fmt.Scanln(&letter) 
+func Imputuser() string {
+	fmt.Println("Enter your letter: ")
+
+	var letter string
+
+	fmt.Scanln(&letter)
+	return letter
+}
+
+func Imputverif(words string, letter string, tabword []string) bool{
+
+	for j := 0; j < len(words); j++ {
+		if string(words[j]) == letter {
+			tabword[j] = letter
+			return true
+		}
+	}
+	fmt.Println(tabword)
+}
+
+func attempt() {
+
 }
