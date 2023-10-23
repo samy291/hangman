@@ -28,26 +28,36 @@ func Displaywords(words string) []string {
 	return tabword
 }
 
-func Imputuser() string {
-	fmt.Println("Enter your letter: ")
+func Imputuser(numattempt int) string {
+	if numattempt >= 1 {
+		fmt.Println("Enter your letter: ")
 
-	var letter string
+		var letter string
 
-	fmt.Scanln(&letter)
-	return letter
+		fmt.Scanln(&letter)
+		return letter
+	}
+	return ""
 }
 
-func Imputverif(words string, letter string, tabword []string) bool{
+func Imputverif(words string, letter string, tabword []string) bool {
+	found := false
 
 	for j := 0; j < len(words); j++ {
 		if string(words[j]) == letter {
 			tabword[j] = letter
-			return true
+			found = true
 		}
 	}
 	fmt.Println(tabword)
+	return found
 }
 
-func attempt() {
-
+func Attempt(bool bool) int {
+	attempts := 10
+	if !bool {
+		attempts--
+	}
+	fmt.Println(attempts)
+	return attempts
 }
