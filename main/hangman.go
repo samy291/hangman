@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"hangman"
-
 	"github.com/fatih/color"
+	"os"
 )
 
 type HangManData struct {
@@ -14,14 +14,24 @@ type HangManData struct {
 	HangmanPositions  [10]string // It can be the array where the positions parsed in "hangman.txt" are stored
 	RemainingAttempts int
 	Usedletter        []string
+	dictionaryPath	  string
 }
 
 // fonction main qui utilise les structures HangManData et qui appelle les fonctions du package hangman sans utiliser hangman.play()
 func main() {
 	hangdat := HangManData{}
+	// S'assurer que le chemin du dictionnaire est fourni en argument
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: ./main/hangman.go <dictionary>")
+		return
+	}
+
+	// Utiliser le chemin du dictionnaire fourni en argument
+	hangdat.dictionaryPath = os.Args[1]
+
 	color.Magenta("\n			!Welcome to Hangman!")
 	fmt.Println("\nYou have 10 attempts to find the word")
-	hangdat.ToFind = hangman.Randomword(hangman.ListeMot("Words/words.txt"))
+	hangdat.ToFind = hangman.Randomword(hangman.ListeMot(hangdat.dictionaryPath))
 	hangdat.Word, hangdat.Usedletter = hangman.Displayword(hangdat.ToFind)
 
 	// Utilisez cette variable pour suivre le nombre d'essais utilisés.
@@ -41,16 +51,16 @@ func main() {
 		fmt.Scan(&letter)
 
 		// Vérifier si la lettre est égale au mot à trouver
-		// if len(letter) > 1 {
-		// if letter == hangdat.ToFind {
-		// 	color.Green("\nYou win")
-		// 	fmt.Println("The word was :", hangdat.ToFind)
-		// 	break
-		// }else{
-		// 	usedAttempts+=2
-		// }
-		// }
-		//Vérifier si la lettre a déjà été utilisée
+		if len(letter) > 1 {
+			if letter == hangdat.ToFind {
+				color.Green("\nYou win")
+				fmt.Println("The word was :", hangdat.ToFind)
+				break
+			} else {
+				usedAttempts += 1
+			}
+		}
+		// Vérifier si la lettre a déjà été utilisée
 		for i := 0; i < len(hangdat.Usedletter); i++ {
 			if letter == hangdat.Usedletter[i] {
 				color.Red("\nYou already used this letter")
