@@ -1,46 +1,70 @@
 package hangman
 
 import (
+	"bufio"
 	"fmt"
+	"log"
 	"math/rand"
+	"os"
 )
 
-func Displaywords(words string) []string {
-	numbwords := len(words)/2 - 1
-
+// fonction qui prend un fichier en argument et qui retourne un tableau de mots utilise
+func ListeMot(fichier string) []string {
+	var trouverlemot []string
+	readFile, err := os.Open(fichier)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile) // Crée un scanner pour lire le fichier.
+	fileScanner.Split(bufio.ScanLines)        // Divise le fichier en lignes.
+	// Parcours chaque ligne du fichier.
+	for fileScanner.Scan() {
+		// Ajoute le texte de la ligne actuelle à la slice trouverlemot.
+		trouverlemot = append(trouverlemot, fileScanner.Text())
+	}
+	readFile.Close()
+	return trouverlemot
+}
+// fonction qui prend un mot en argument et qui affiche le mot en underscore avec un nombre de lettre aléatoire afficher
+func Displayword(words string) ([]string, []string) {
+	numbreveal := (len(words) /2) - 1
 	tabword := make([]string, len(words))
 	for i := range tabword {
 		tabword[i] = "_"
 	}
-
-	for i := 0; i < numbwords; i++ {
+	var randomletter []string
+	for i := 0; i < numbreveal; i++ {
 		max := len(words) - 1
 		indexrandomword := rand.Intn(max)
 		randomletter := string(words[indexrandomword])
-
 		for j := 0; j < len(words); j++ {
 			if string(words[j]) == randomletter {
 				tabword[j] = randomletter
 			}
 		}
 	}
-	fmt.Println(tabword)
+	return tabword, randomletter
+}
+
+// fonction qui prend un mot aléatoire dans un tableau de mots entrer en argument
+func Randomword(words []string) string {
+	max := len(words) - 1
+	indexrandomword := rand.Intn(max)
+	randomword := words[indexrandomword]
+	return randomword
+}
+
+// fonction qui prend un mot en argument et qui affiche le nombre de lettres du mot en underscore
+func Displaywords(words string) []string {
+	tabword := make([]string, len(words))
+	for i := range tabword {
+		tabword[i] = "_"
+	}
 	return tabword
 }
 
-func Imputuser(numattempt int) string {
-	if numattempt >= 1 {
-		fmt.Println("Enter your letter: ")
-
-		var letter string
-
-		fmt.Scanln(&letter)
-		return letter
-	}
-	return ""
-}
-
-func Imputverif(words string, letter string, tabword []string) bool {
+// fonction qui prend un mot, une lettre et un tableau de lettres en argument et qui vérifie si la lettre est dans le mot
+func Imputverif(words string, letter string, tabword []string) (bool, []string) {
 	found := false
 
 	for j := 0; j < len(words); j++ {
@@ -49,15 +73,72 @@ func Imputverif(words string, letter string, tabword []string) bool {
 			found = true
 		}
 	}
-	fmt.Println(tabword)
-	return found
+	return found, tabword
 }
 
-func Attempt(bool bool) int {
-	attempts := 10
-	if !bool {
-		attempts--
+func Attempt(attempts int, found bool) int {
+	if found {
+		return attempts
 	}
-	fmt.Println(attempts)
-	return attempts
+	return attempts - 1
 }
+
+// fonction qui prend un tableau de lettres en argument et qui vérifie si le mot est trouvé
+func Win(tabword []string) bool {
+	for i := 0; i < len(tabword); i++ {
+		if tabword[i] == "_" {
+			return false
+		}
+	}
+	return true
+}
+
+// fonction qui affiche le pendu en fonction du nombre d'essai restant en lisant hangman.txt si le nombre d'essais decremente alors il ouvre le fichier hangman.txt et print le pendu correspondant
+
+func Displaywin(win bool) {
+	if win {
+		fmt.Println("You win")
+	} else {
+		fmt.Println("You lose")
+	}
+}
+
+// fonction qui change la lettre en remplacent le tirer par la lettre si la lettre est dans le mot
+func Changeletter(letter string, words string, tabword []string) []string {
+	for j := 0; j < len(words); j++ {
+		if string(words[j]) == letter {
+			tabword[j] = letter
+		}
+	}
+	return tabword
+}
+
+func RemainingAttempts(maxAttempts, usedAttempts int) int {
+	return maxAttempts - usedAttempts
+}
+
+func PrintHangman(attempts int) {
+    // Lire les frames du fichier hangman séparées par la séquence "========="
+    file, err := os.Open("hangman.txt")
+    if err != nil {
+        fmt.Println("Error: cannot open file")
+        os.Exit(1)
+    }
+    defer file.Close()
+    scanner := bufio.NewScanner(file)
+    scanner.Split(bufio.ScanLines)
+    var frames []string
+    var frame string     // Frame actuelle
+    for scanner.Scan() { // Lit le fichier ligne par ligne
+        line := scanner.Text()   // Stocke la ligne actuelle
+        if line == "=========" { // Si la ligne est "=========", on a fini une frame
+            frame += line + "\n"
+            frames = append(frames, frame) // On ajoute la frame au tableau de frames
+            frame = ""                     // On réinitialise la frame
+        } else {
+            frame += line + "\n" // On ajoute la ligne à la frame
+        }
+    }
+        fmt.Println(frames[len(frames)-attempts-1])
+}
+
