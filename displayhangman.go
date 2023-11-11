@@ -29,10 +29,10 @@ func ListeMot(fichier string) []string {
 func Displayword(words string) ([]string, []string) {
 	numbreveal := (len(words) /2) - 1
 	tabword := make([]string, len(words))
+	var randomletter []string
 	for i := range tabword {
 		tabword[i] = "_"
 	}
-	var randomletter []string
 	for i := 0; i < numbreveal; i++ {
 		max := len(words) - 1
 		indexrandomword := rand.Intn(max)
@@ -52,15 +52,6 @@ func Randomword(words []string) string {
 	indexrandomword := rand.Intn(max)
 	randomword := words[indexrandomword]
 	return randomword
-}
-
-// fonction qui prend un mot en argument et qui affiche le nombre de lettres du mot en underscore
-func Displaywords(words string) []string {
-	tabword := make([]string, len(words))
-	for i := range tabword {
-		tabword[i] = "_"
-	}
-	return tabword
 }
 
 // fonction qui prend un mot, une lettre et un tableau de lettres en argument et qui vérifie si la lettre est dans le mot
@@ -103,16 +94,6 @@ func Displaywin(win bool) {
 	}
 }
 
-// fonction qui change la lettre en remplacent le tirer par la lettre si la lettre est dans le mot
-func Changeletter(letter string, words string, tabword []string) []string {
-	for j := 0; j < len(words); j++ {
-		if string(words[j]) == letter {
-			tabword[j] = letter
-		}
-	}
-	return tabword
-}
-
 func RemainingAttempts(maxAttempts, usedAttempts int) int {
 	return maxAttempts - usedAttempts
 }
@@ -139,6 +120,12 @@ func PrintHangman(attempts int) {
             frame += line + "\n" // On ajoute la ligne à la frame
         }
     }
+
+    // Vérifiez que attempts est dans la plage valide pour éviter l'index out of range
+    if attempts >= 0 && attempts < len(frames) {
+        // Afficher la frame correspondant au nombre de vies restantes
         fmt.Println(frames[len(frames)-attempts-1])
+    }
 }
+
 

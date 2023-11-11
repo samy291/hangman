@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"hangman"
-	"github.com/fatih/color"
 	"os"
+
+	"github.com/fatih/color"
 )
 
 type HangManData struct {
@@ -14,7 +15,7 @@ type HangManData struct {
 	HangmanPositions  [10]string // It can be the array where the positions parsed in "hangman.txt" are stored
 	RemainingAttempts int
 	Usedletter        []string
-	dictionaryPath	  string
+	dictionaryPath    string
 }
 
 // fonction main qui utilise les structures HangManData et qui appelle les fonctions du package hangman sans utiliser hangman.play()
@@ -49,6 +50,7 @@ func main() {
 		fmt.Println("Please enter a letter:")
 		var letter string
 		fmt.Scan(&letter)
+		hangdat.Usedletter = append(hangdat.Usedletter, letter)
 
 		// Vérifier si la lettre est égale au mot à trouver
 		if len(letter) > 1 {
@@ -60,20 +62,27 @@ func main() {
 				usedAttempts += 1
 			}
 		}
-		// Vérifier si la lettre a déjà été utilisée
-		for i := 0; i < len(hangdat.Usedletter); i++ {
-			if letter == hangdat.Usedletter[i] {
-				color.Red("\nYou already used this letter")
-				found = true
-			}
-		}
 		// Vérifier si la lettre est dans le mot
 		found, hangdat.Usedletter = hangman.Imputverif(hangdat.ToFind, letter, hangdat.Word)
 
 		// Incrémenter le nombre d'essais utilisés uniquement si la lettre n'est pas trouvée
 		if !found {
-			usedAttempts++
+			letterAlreadyUsed := false
+			for i := 0; i < len(hangdat.Usedletter); i++ {
+				if letter == hangdat.Usedletter[i] {
+					fmt.Println("You already used this letter")
+					letterAlreadyUsed = true
+					break // Sortir de la boucle dès qu'on a trouvé la lettre
+				}
+			}
+		
+			if !letterAlreadyUsed {
+				hangdat.Usedletter = append(hangdat.Usedletter, letter)
+				usedAttempts++
+			}
 		}
+		
+
 
 		// Mettre à jour le nombre d'essais restants en fonction du nombre d'essais utilisés
 		hangdat.Attempts = hangdat.RemainingAttempts - usedAttempts
@@ -87,7 +96,7 @@ func main() {
 			color.Green("\nYou win")
 			fmt.Println("The word was :", hangdat.ToFind)
 			break
-		} else if hangdat.Attempts == 0 {
+		} else if hangdat.Attempts <= 0 {
 			color.Red("\nYou lose")
 			fmt.Println("The word was :", hangdat.ToFind)
 			break
