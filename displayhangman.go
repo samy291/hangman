@@ -6,11 +6,13 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"io/ioutil"
+	"encoding/json"
 )
 
 // fonction qui prend un fichier en argument et qui retourne un tableau de mots utilise
 func ListeMot(fichier string) []string {
-	var trouverlemot []string
+	var findword []string
 	readFile, err := os.Open(fichier)
 	if err != nil {
 		log.Fatal(err)
@@ -20,10 +22,10 @@ func ListeMot(fichier string) []string {
 	// Parcours chaque ligne du fichier.
 	for fileScanner.Scan() {
 		// Ajoute le texte de la ligne actuelle à la slice trouverlemot.
-		trouverlemot = append(trouverlemot, fileScanner.Text())
+		findword = append(findword, fileScanner.Text())
 	}
 	readFile.Close()
-	return trouverlemot
+	return findword
 }
 // fonction qui prend un mot en argument et qui affiche le mot en underscore avec un nombre de lettre aléatoire afficher
 func Displayword(words string) ([]string, []string) {
@@ -129,38 +131,47 @@ func PrintHangman(attempts int) {
 }
 
 //save function
-func Save(word []string, tabword string, attempts int, usedletter []string, dictionaryPath string) {
-	file, err := os.Create(dictionaryPath)
+func Save(words string, tabword []string, attempts int, usedletter []string) {
+	f, err := os.Create("save.txt")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return
 	}
-	defer file.Close()
-	// Write the string to the file
-	_, err = file.WriteString(word + "\n")
-	if err != nil {
-		log.Fatal(err)
-	}
+	defer f.Close()
+	f.WriteString(words)
+f.WriteString("\n")
+	f.WriteString(string(attempts))
+	f.WriteString("\n")
 	for i := 0; i < len(tabword); i++ {
-		_, err = file.WriteString(tabword[i] + "\n")
-		if err != nil {
-			log.Fatal(err)
-		}
+		f.WriteString(tabword[i])
 	}
-	_, err = file.WriteString(string(attempts) + "\n")
-	if err != nil {
-		log.Fatal(err)
-	}
+	f.WriteString("\n")
 	for i := 0; i < len(usedletter); i++ {
-		_, err = file.WriteString(usedletter[i] + "\n")
-		if err != nil {
-			log.Fatal(err)
+		f.WriteString(usedletter[i])
+	}
+}
+
+func Load(filePath string, data interface{}) error {
+	file, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to read file: %v", err)
+	}
+
+	err = json.Unmarshal(file, data)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal data: %v", err)
+	}
+
+	return nil
+}
+
+func IsLetterUsed(letter string, usedLetters []string) bool {
+	for _, usedLetter := range usedLetters {
+		if letter == usedLetter {
+			return true
 		}
 	}
-	// Save the file
-	err = file.Sync()
-	if err != nil {
-		log.Fatal(err)
-	}
+	return false
 }
 
 
