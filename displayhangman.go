@@ -128,4 +128,39 @@ func PrintHangman(attempts int) {
     }
 }
 
+//save function
+func Save(word []string, tabword string, attempts int, usedletter []string, dictionaryPath string) {
+	file, err := os.Create(dictionaryPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	// Write the string to the file
+	_, err = file.WriteString(word + "\n")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for i := 0; i < len(tabword); i++ {
+		_, err = file.WriteString(tabword[i] + "\n")
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	_, err = file.WriteString(string(attempts) + "\n")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for i := 0; i < len(usedletter); i++ {
+		_, err = file.WriteString(usedletter[i] + "\n")
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	// Save the file
+	err = file.Sync()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 

@@ -43,6 +43,8 @@ func main() {
 	// Déterminez le nombre d'essais restants à partir des tentatives utilisées.
 	hangdat.Attempts = hangdat.RemainingAttempts
 	found := false
+	// fonction save qui permet de sauvegarder la partie
+	hangman.Save(hangdat.Word, hangdat.ToFind, hangdat.Attempts, hangdat.Usedletter, hangdat.dictionaryPath)
 
 	for hangdat.Attempts > 0 {
 		fmt.Println(hangdat.Word)
