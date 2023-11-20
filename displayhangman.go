@@ -6,8 +6,10 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"io/ioutil"
+	// "io/ioutil"
 	"encoding/json"
+	"time"
+	"strings"	
 )
 
 // fonction qui prend un fichier en argument et qui retourne un tableau de mots utilise
@@ -28,45 +30,48 @@ func ListeMot(fichier string) []string {
 	return findword
 }
 // fonction qui prend un mot en argument et qui affiche le mot en underscore avec un nombre de lettre aléatoire afficher
-func Displayword(words string) ([]string, []string) {
-	numbreveal := (len(words) /2) - 1
-	tabword := make([]string, len(words))
-	var randomletter []string
-	for i := range tabword {
-		tabword[i] = "_"
-	}
-	for i := 0; i < numbreveal; i++ {
-		max := len(words) - 1
-		indexrandomword := rand.Intn(max)
-		randomletter := string(words[indexrandomword])
-		for j := 0; j < len(words); j++ {
-			if string(words[j]) == randomletter {
-				tabword[j] = randomletter
-			}
-		}
-	}
-	return tabword, randomletter
+func Displayword(words string) string {
+    numbreveal := (len(words) /2) - 1
+    tabword := make([]string, len(words))
+    for i := range tabword {
+        tabword[i] = "_"
+    }
+    for i := 0; i < numbreveal; i++ {
+        max := len(words) - 1
+        indexrandomword := rand.Intn(max)
+        randomletter := string(words[indexrandomword])
+        for j := 0; j < len(words); j++ {
+            if string(words[j]) == randomletter {
+                tabword[j] = randomletter
+            }
+        }
+    }
+    return strings.Join(tabword, "")
 }
 
 // fonction qui prend un mot aléatoire dans un tableau de mots entrer en argument
-func Randomword(words []string) string {
-	max := len(words) - 1
-	indexrandomword := rand.Intn(max)
-	randomword := words[indexrandomword]
-	return randomword
+func Randomword(tabwords []string) string {
+    rand.Seed(time.Now().UnixNano()) // Initialize the random number generator
+    max := len(tabwords)
+    indexrandomword := rand.Intn(max)
+    randomword := tabwords[indexrandomword]
+    return randomword
 }
 
 // fonction qui prend un mot, une lettre et un tableau de lettres en argument et qui vérifie si la lettre est dans le mot
-func Imputverif(words string, letter string, tabword []string) (bool, []string) {
-	found := false
+func Imputverif(words string, letter string, tabword string) (bool, string) {
+    found := false
+    runes := []rune(tabword)
 
-	for j := 0; j < len(words); j++ {
-		if string(words[j]) == letter {
-			tabword[j] = letter
-			found = true
-		}
-	}
-	return found, tabword
+    for j := 0; j < len(words); j++ {
+        if string(words[j]) == letter {
+            runes[j] = rune(letter[0])
+            found = true
+        }
+    }
+
+    tabword = string(runes)
+    return found, tabword
 }
 
 func Attempt(attempts int, found bool) int {
@@ -77,9 +82,9 @@ func Attempt(attempts int, found bool) int {
 }
 
 // fonction qui prend un tableau de lettres en argument et qui vérifie si le mot est trouvé
-func Win(tabword []string) bool {
+func Win(tabword string) bool {
 	for i := 0; i < len(tabword); i++ {
-		if tabword[i] == "_" {
+		if string(tabword[i]) == "_" {
 			return false
 		}
 	}
@@ -131,47 +136,75 @@ func PrintHangman(attempts int) {
 }
 
 //save function
-func Save(words string, tabword []string, attempts int, usedletter []string) {
-	f, err := os.Create("save.txt")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer f.Close()
-	f.WriteString(words)
-f.WriteString("\n")
-	f.WriteString(string(attempts))
-	f.WriteString("\n")
-	for i := 0; i < len(tabword); i++ {
-		f.WriteString(tabword[i])
-	}
-	f.WriteString("\n")
-	for i := 0; i < len(usedletter); i++ {
-		f.WriteString(usedletter[i])
-	}
+func Save(filePath string, data interface{}) error {
+    file, err := os.Create(filePath)
+    if err != nil {
+        return fmt.Errorf("failed to create file: %v", err)
+    }
+    defer file.Close()
+
+    jsonData, err := json.Marshal(data)
+    if err != nil {
+        return fmt.Errorf("failed to marshal data: %v", err)
+    }
+
+    _, err = file.Write(jsonData)
+    if err != nil {
+        return fmt.Errorf("failed to write data to file: %v", err)
+    }
+
+    return nil
 }
 
+//load function
 func Load(filePath string, data interface{}) error {
-	file, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return fmt.Errorf("failed to read file: %v", err)
-	}
+    file, err := os.Open(filePath)
+    if err != nil {
+        return fmt.Errorf("failed to open file: %v", err)
+    }
+    defer file.Close()
 
-	err = json.Unmarshal(file, data)
-	if err != nil {
-		return fmt.Errorf("failed to unmarshal data: %v", err)
-	}
+    err = json.NewDecoder(file).Decode(data)
+    if err != nil {
+        return fmt.Errorf("failed to decode data: %v", err)
+    }
 
-	return nil
+    return nil
 }
 
-func IsLetterUsed(letter string, usedLetters []string) bool {
-	for _, usedLetter := range usedLetters {
-		if letter == usedLetter {
+// fonction qui compare usedletter et letter et qui retourne un bool
+func Compareletter(usedletter []string, letter string) bool {
+	for i := 0; i < len(usedletter); i++ {
+		if usedletter[i] == letter {
 			return true
 		}
 	}
 	return false
 }
 
+// fonction qui prend un mot en argument et qui retourne un tableau de lettre
+func Ascii(word []rune) {
 
+    file, err := os.Open("standard.txt")
+    if err != nil {
+        fmt.Println("Error file:", err)
+        return
+    }
+    defer file.Close()
+
+    var ascii []string
+    scanner := bufio.NewScanner(file)
+
+    for scanner.Scan() {
+        ascii = append(ascii, scanner.Text())
+
+    }
+
+    for i := 0; i < 9; i++ {
+        for j := 0; j < len(word); j++ {
+            fmt.Print(ascii[((int(word[j])-32)*9)+i])
+        }
+        fmt.Print("\n")
+    }
+
+}

@@ -1,6 +1,6 @@
 module hangman
 
-go 1.21.3
+go 1.17
 
 require github.com/fatih/color v1.16.0
 

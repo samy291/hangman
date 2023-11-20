@@ -1,0 +1,1 @@
+{"Word":"femme","ToFind":"femme","Attempts":10,"HangmanPositions":["","","","","","","","","",""],"RemainingAttempts":10,"Usedletter":null}
