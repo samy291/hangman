@@ -19,14 +19,26 @@ type HangManData struct {
 	dictionaryPath    string
 	letter            string
 	randletter        string
+	mode			  string
 }
 
 func main() {
 	hangdat := HangManData{}
 
-	mode := os.Args[1]
+	hangdat.mode = os.Args[1]
+	if len(os.Args) > 2 && os.Args[1] == "--startWith" {
+		saveFilePath := os.Args[2]
+		err := hangman.Load(saveFilePath, &hangdat)
+		if err != nil {
+			fmt.Println("Error loading game:", err)
+			return
+		}
+		fmt.Println("Game loaded from", saveFilePath)
+		hangdat.ToFind = hangman.Randomword(hangman.ListeMot(hangdat.dictionaryPath))
+		hangdat.Word = hangman.Displayword(hangdat.ToFind)
+	}
 
-	if mode == "--classic" {
+	if hangdat.mode == "--classic" {
 
 		// Use the mode and dictionary path provided as arguments
 		hangdat.dictionaryPath = os.Args[2]
@@ -127,7 +139,7 @@ found, hangdat.Word = hangman.Imputverif(hangdat.ToFind, hangdat.letter, hangdat
 				break
 			}
 		}
-	}else if mode == "--ascii"{
+	}else if hangdat.mode == "--ascii"{
 		
 		// Use the mode and dictionary path provided as arguments
 		hangdat.dictionaryPath = os.Args[2]

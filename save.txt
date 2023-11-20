@@ -1,1 +1,1 @@
-{"Word":"femme","ToFind":"femme","Attempts":10,"HangmanPositions":["","","","","","","","","",""],"RemainingAttempts":10,"Usedletter":null}
+{"Word":"poub____","ToFind":"poubelle","Attempts":8,"HangmanPositions":["","","","","","","","","",""],"RemainingAttempts":10,"Usedletter":["ed"]}
