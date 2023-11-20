@@ -1,1 +1,1 @@
-{"Word":"poub____","ToFind":"poubelle","Attempts":8,"HangmanPositions":["","","","","","","","","",""],"RemainingAttempts":10,"Usedletter":["ed"]}
+{"Word":"ecole","ToFind":"ecole","Attempts":2,"HangmanPositions":["","","","","","","","","",""],"RemainingAttempts":10,"Usedletter":["a","s","d","co","cp","q"]}

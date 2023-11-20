@@ -18,7 +18,6 @@ type HangManData struct {
 	Usedletter        []string
 	dictionaryPath    string
 	letter            string
-	randletter        string
 	mode			  string
 }
 
