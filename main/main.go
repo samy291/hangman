@@ -81,6 +81,11 @@ func main() {
 			fmt.Scan(&letter)
 			hangdat.letter = letter
 
+			for i := range hangdat.Word {
+				if hangdat.Word[i] != '_' {
+					hangdat.Usedletter = append(hangdat.Usedletter, string(hangdat.Word[i]))
+				}
+			}
 			if letter == "STOP" {
 				err := hangman.Save("save.txt", hangdat)
 				if err != nil {
