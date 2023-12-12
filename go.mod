@@ -1,4 +1,4 @@
-module hangman
+module github.com/samy291/hangman
 
 go 1.17
 
