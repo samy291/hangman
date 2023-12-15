@@ -1,3 +1,5 @@
+package hangman
+
 type HangManData struct {
 	Word              string     // Word composed of '_', ex: H_ll_
 	ToFind            string     // Final word chosen by the program at the beginning. It is the word to find
@@ -7,5 +9,5 @@ type HangManData struct {
 	Usedletter        []string
 	dictionaryPath    string
 	letter            string
-	mode			  string
+	mode              string
 }
