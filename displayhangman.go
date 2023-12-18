@@ -13,9 +13,10 @@ import (
 )
 
 // fonction qui prend un fichier en argument et qui retourne un tableau de mots utilise
-func ListeMot(fichier string) []string {
-	var findword []string
-	readFile, err := os.Open(fichier)
+func ListeMot() string {
+    dictionaryPath := os.Args[1]
+	var tabword []string
+	readFile, err := os.Open(dictionaryPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -24,10 +25,15 @@ func ListeMot(fichier string) []string {
 	// Parcours chaque ligne du fichier.
 	for fileScanner.Scan() {
 		// Ajoute le texte de la ligne actuelle à la slice trouverlemot.
-		findword = append(findword, fileScanner.Text())
+		tabword = append(tabword, fileScanner.Text())
 	}
 	readFile.Close()
-	return findword
+    rand.Seed(time.Now().UnixNano()) // Initialize the random number generator
+    max := len(tabword)
+    indexrandomword := rand.Intn(max)
+    randomword := tabword[indexrandomword]
+
+	return randomword
 }
 // fonction qui prend un mot en argument et qui affiche le mot en underscore avec un nombre de lettre aléatoire afficher
 func Displayword(words string) string {
