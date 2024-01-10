@@ -9,13 +9,12 @@ import (
 
 	// "io/ioutil"
 	"encoding/json"
-	"strings"
 	"time"
 )
 
 // fonction qui prend un fichier en argument et qui retourne un tableau de mots utilise
-func ListeMot() string {
-	dictionaryPath := os.Args[1]
+func ListeMot(file string) string {
+	dictionaryPath := file
 	var tabword []string
 	readFile, err := os.Open(dictionaryPath)
 	if err != nil {
@@ -38,24 +37,6 @@ func ListeMot() string {
 }
 
 // fonction qui prend un mot en argument et qui affiche le mot en underscore avec un nombre de lettre aléatoire afficher
-func Displayword(words string) string {
-	numbreveal := (len(words) / 2) - 1
-	tabword := make([]string, len(words))
-	for i := range tabword {
-		tabword[i] = "_"
-	}
-	for i := 0; i < numbreveal; i++ {
-		max := len(words) - 1
-		indexrandomword := rand.Intn(max)
-		randomletter := string(words[indexrandomword])
-		for j := 0; j < len(words); j++ {
-			if string(words[j]) == randomletter {
-				tabword[j] = randomletter
-			}
-		}
-	}
-	return strings.Join(tabword, "")
-}
 
 // fonction qui prend un mot, une lettre et un tableau de lettres en argument et qui vérifie si la lettre est dans le mot
 func Imputverif(words string, letter string, tabword string) (bool, string) {
